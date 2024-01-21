@@ -1,3 +1,5 @@
+document.getElementById('userForm').addEventListener('submit', handleFormSubmit);
+
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch existing data when the page loads
     axios.get("https://crudcrud.com/api/4b6cc0a08b63440bb53d3df7166130e1/appointmentdata")
@@ -7,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch((err) => console.log(err));
 });
-
-document.getElementById('userForm').addEventListener('submit', handleFormSubmit);
 
 function handleFormSubmit(event) {
     event.preventDefault();
@@ -28,8 +28,8 @@ function handleFormSubmit(event) {
             // Perform the update operation
             axios.put(`https://crudcrud.com/api/4b6cc0a08b63440bb53d3df7166130e1/appointmentdata/${editingUserId}`, userData)
                 .then((res) => {
-                    const editedUserData = { ...userData, id: editingUserId };
-                    showUserOnScreen(editedUserData);
+                    const updatedUserData = { ...userData, id: editingUserId };
+                    updateEditedUserOnScreen(updatedUserData);
                 })
                 .catch((err) => console.log(err));
 
@@ -49,8 +49,12 @@ function handleFormSubmit(event) {
         event.target.username.value = '';
         event.target.email.value = '';
         event.target.phone.value = '';
+
+        // Re-fetch and display data after any modification
+        fetchDataAndDisplay();
     }
 }
+
 
 function showUserOnScreen(userData) {
     const parentElem = document.getElementById('listofitems');
@@ -93,5 +97,13 @@ function showUserOnScreen(userData) {
     // Append or update list item in the parent element
     if (!existingListItem) {
         parentElem.appendChild(childElem);
+    }
+}
+
+function updateEditedUserOnScreen(userData) {
+    // Find the existing list item and update its content
+    const listItem = document.querySelector(`#listofitems li[data-user-id="${userData.id}"]`);
+    if (listItem) {
+        listItem.textContent = `${userData.name} - ${userData.email} - ${userData.phonenumber}`;
     }
 }
